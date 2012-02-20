@@ -1,13 +1,8 @@
+
 $.domReady(function() {
 
   window.filter = new BayesFilter();
   
-  window.filter.train("A simple document containing some random words", "good");
-  window.filter.train("Animals: Cat, Dog, Capybara, Penguin.", "good");
-  window.filter.train("The quick brown fox jumps over the lazy dog.", "good");
-  window.filter.train("Do you want Viagra, Cialis or any other penis enhancing drugs?", "bad");
-  window.filter.train("How many SEO experts does it take to change a lightbulb lightbulbs free lightbulbs xxx breasts sex", "bad");
-  window.filter.train("You have girlfriend Vietnam? Me so horny. Me love you long time.", "bad");
 
   var currentData = $("#currentData")[0];
   var trainData = $("#trainingData")[0];
@@ -15,6 +10,19 @@ $.domReady(function() {
 
   var trainButton = $("#train");
   var classifyButton = $("#classify");
+  var initialTrainButton = $("#initialTrain");
+
+  var initialTraining = function() {
+    window.filter.train("A simple document containing some random words", "good");
+    window.filter.train("Animals: Cat, Dog, Capybara, Penguin.", "good");
+    window.filter.train("The quick brown fox jumps over the lazy dog.", "good");
+    window.filter.train("Do you want Viagra, Cialis or any other penis enhancing drugs?", "bad");
+    window.filter.train("How many SEO experts does it take to change a lightbulb lightbulbs free lightbulbs xxx breasts sex", "bad");
+    window.filter.train("You have girlfriend Vietnam? Me so horny. Me love you long time.", "bad");
+    currentData.value = JSON.stringify(window.filter.data, undefined, 2);
+  }
+
+  initialTrainButton.bind("click", initialTraining);
   
   classifyButton.bind("click", function(){
     var results = $("#results")[0];
