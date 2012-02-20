@@ -16,7 +16,7 @@ Array.prototype.uniq = function(){
   ,[]);
 }
 
-BayesFilter = function() {
+BayesFilter = function(useLocalStorage) {
 
   // Variables
   this.klasses = {};
@@ -24,8 +24,28 @@ BayesFilter = function() {
   this.assumedProbability = 0.5;
   this.assumedProbabilityWeight = 1;
   this.documentCount = 0;
+  this.useLocalStorage = !!useLocalStorage;
+
+  // Local Storage
+  
+  this.loadFromLocalStorage = function(){
+    var data = window.localStorage.getItem("BayesFilterData");
+    if(data){
+      this.data = JSON.parse(data);
+    }
+  }
+
+  this.saveToLocalStorage = function(){
+    var dataJSON = JSON.stringify(this.data);
+    window.localStorage.setItem("BayesFilterData", dataJSON);
+  }
+
+  if(this.useLocalStorage){
+    this.loadFromLocalStorage();
+  }
 
   // Helpers
+  // May not really be thought out too well...
   this.helpers = {};
 
   this.helpers.getWordSet = function(text) {
@@ -126,6 +146,10 @@ BayesFilter = function() {
     this.data = this.helpers.addWordSet(this.data, words, klass);
     this.klasses = this.helpers.addKlass(this.klasses, klass);  
     this.documentCount += 1;
+
+    if(this.useLocalStorage){
+      this.saveToLocalStorage();
+    }
     return this;
   };
 

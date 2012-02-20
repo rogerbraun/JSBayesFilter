@@ -1,6 +1,6 @@
 $.domReady(function() {
 
-  window.filter = new BayesFilter();
+  window.filter = new BayesFilter(true); // Use local storage
   
 
   var currentData = $("#currentData")[0];
