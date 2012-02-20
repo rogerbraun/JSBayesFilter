@@ -1,4 +1,3 @@
-
 $.domReady(function() {
 
   window.filter = new BayesFilter();
@@ -11,6 +10,7 @@ $.domReady(function() {
   var trainButton = $("#train");
   var classifyButton = $("#classify");
   var initialTrainButton = $("#initialTrain");
+  var trainFromUrlButton = $("#trainFromUrl");
 
   var initialTraining = function() {
     window.filter.train("A simple document containing some random words", "good");
@@ -22,7 +22,36 @@ $.domReady(function() {
     currentData.value = JSON.stringify(window.filter.data, undefined, 2);
   }
 
+  var getClass = function(){
+    // TODO: There must be a less stupid way to do this.
+    var good = $("#goodClass")[0].checked;
+    var klass = ""
+    if(good){
+      klass = "good";
+    } else {
+      klass = "bad";
+    }
+    return klass;
+  }
+
+  var trainFromUrl = function(url, klass){
+    var request = "http://viewtext.org/api/text?url=" + encodeURI(url) + "&callback=window.filter.callback";
+    window.filter.callback = function(response){
+      window.filter.train(response.content, klass);
+      currentData.value = JSON.stringify(window.filter.data, undefined, 2);
+    }
+    script = document.createElement("script");
+    script.src = request;
+    $("body")[0].appendChild(script);
+  }
+
   initialTrainButton.bind("click", initialTraining);
+
+  trainFromUrlButton.bind("click", function(){
+    var klass = getClass();
+    var url = $("#url")[0].value;
+    trainFromUrl(url, klass);
+  });
   
   classifyButton.bind("click", function(){
     var results = $("#results")[0];
@@ -38,14 +67,7 @@ $.domReady(function() {
   });
 
   trainButton.bind("click", function(){
-    var good = $("#goodClass")[0].checked;
-    var klass = ""
-    if(good){
-      klass = "good";
-    } else {
-      klass = "bad";
-    }
-    
+    var klass = getClass();
     var trainingData = $("#trainingData")[0].value;
     window.filter.train(trainingData, klass);
     currentData.value = JSON.stringify(window.filter.data, undefined, 2);

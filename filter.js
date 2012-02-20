@@ -25,7 +25,6 @@ BayesFilter = function() {
   this.assumedProbabilityWeight = 1;
   this.documentCount = 0;
 
-
   // Helpers
   this.helpers = {};
 
