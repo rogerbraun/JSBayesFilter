@@ -118,7 +118,7 @@ BayesFilter = function() {
 
   this.categoryProbability = function(dokument, klass) {
     var documentProbability = this.documentProbability(dokument, klass);
-    var categoryProbability = this.data[klass] / this.documentCount; // think of new name
+    var categoryProbability = this.klasses[klass] / this.documentCount; // think of new name
     return documentProbability * categoryProbability;
   }
 

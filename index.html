@@ -17,19 +17,44 @@
       </div>
       <div class="row">
         <div class="span4">
-          <h1>Good data</h1>
-          <textarea id="goodData" class="span4" rows="10"></textarea>
-        </div>
-        <div class="span4">
-          <h1>Bad data</h1>
-          <textarea id="BadData" class="span4" rows="10"></textarea>
-        </div>
-        <div class="span4">
           <div class="well">
             <ul class="nav nav-list">
               <li class="nav-header">Actions</li>
               <li><a href="#" id="train">Train</a></li>
+              <li><a href="#" id="classify">Classify</a></li>
             </ul>
+          </div>
+        </div>
+        <div class="span8">
+          <div class="row">
+            <div class="span8">
+              <h1>Classification data</h1>
+              <textarea id="classificationData" class="span8" rows="10"></textarea>
+              <h2>Results</h2>
+              <p id="results">Nothing yet</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <h1>Training data</h1>
+              <div class="control-group">
+                <div class="controls">
+                  <label class="radio inline">
+                    <input id="goodClass" type="radio" name="klass" value="good" checked="true"/> Good
+                  </label>
+                  <label class="radio inline">
+                    <input id="badClass" type="radio" name="klass" value="bad"/> Bad
+                  </label>
+                </div>
+              </div>
+              <textarea id="trainingData" class="span8" rows="10"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="span8">
+              <h1>Current data</h1>
+              <textarea id="currentData" class="span8" rows="10"></textarea>
+            </div>
           </div>
         </div>
       </div>
