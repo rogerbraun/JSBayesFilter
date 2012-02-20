@@ -19,8 +19,10 @@ Array.prototype.uniq = function(){
 BayesFilter = function() {
 
   // Variables
-  this.klasses = [];
+  this.klasses = {};
   this.data = {};
+  this.assumedProbability = 0.5;
+  this.assumedProbabilityWeight = 1;
   this.documentCount = 0;
 
 
@@ -32,7 +34,7 @@ BayesFilter = function() {
     split = split.filter(function(word){return word != ""}); // Remove empty strings
     split = split.map(function(word){return word.toLowerCase()}); // Make everything lowercase
     split = split.uniq(); // Get only unique words
-    return split
+    return split;
   };
 
   this.helpers.addWordSet = function(oldData, words, klass) {
@@ -55,17 +57,77 @@ BayesFilter = function() {
   }
 
   this.helpers.addKlass = function(oldKlasses, klass) {
-    // How do I clone arrays? Not needed as I reduce it, producing a new array.
-    oldKlasses.push(klass);
-    return oldKlasses.uniq();
+    if(oldKlasses[klass]){
+      oldKlasses[klass] += 1;
+    } else {
+      oldKlasses[klass] = 1;
+    }
+    return oldKlasses;
   }
 
+
   // Functions
+  
+  this.wordCount = function(word, klass) {
+    word = word.toLowerCase();
+    if(this.data[word] && this.data[word][klass]){
+      return this.data[word][klass];
+    } else {
+      return 0;
+    }
+  }
+
+  this.totalWordCount = function(word) {
+    word = word.toLowerCase();
+    var count = 0;
+    if(this.data[word]){
+      for(klass in this.data[word]){
+        count += this.data[word][klass]; 
+      }
+    }
+    return count;
+  }
+  
+  this.wordProbability = function(word, klass) {
+    word = word.toLowerCase();
+    if(this.data[word] && this.data[word][klass]) { // Word must exist and class must exist
+      var wordCount = this.data[word][klass];
+      var klassCount = this.klasses[klass];
+      return wordCount / klassCount;
+    } else {
+      return 0;
+    }
+  }
+
+  this.weightedProbability = function(word, klass) {
+    word = word.toLowerCase();
+    var unweightedProbability = this.wordProbability(word, klass);
+    var totalWordCount = this.totalWordCount(word);
+    return ((this.assumedProbability * this.assumedProbabilityWeight) + (totalWordCount * unweightedProbability)) / (this.assumedProbabilityWeight + totalWordCount);
+  }
+
+  this.documentProbability = function(dokument, klass) {
+    var probability = 1;
+    var words = this.helpers.getWordSet(dokument);
+    for(i = 0; i < words.length; i++){
+      var word = words[i];
+      probability = probability * this.weightedProbability(word, klass);
+    }     
+    return probability;
+  }
+
+  this.categoryProbability = function(dokument, klass) {
+    var documentProbability = this.documentProbability(dokument, klass);
+    var categoryProbability = this.data[klass] / this.documentCount; // think of new name
+    return documentProbability * categoryProbability;
+  }
+
   this.train = function(text, klass) {
     var words = this.helpers.getWordSet(text);
     this.data = this.helpers.addWordSet(this.data, words, klass);
     this.klasses = this.helpers.addKlass(this.klasses, klass);  
     this.documentCount += 1;
+    return this;
   };
 
 }
